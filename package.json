@@ -1,0 +1,19 @@
+{
+  "name": "UniswapRouting",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "3.0.0",
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
+    "@uniswap/sdk-core": "^4.0.10",
+    "@uniswap/smart-order-router": "^3.20.2",
+    "@uniswap/v3-sdk": "^3.10.2",
+    "dotenv": "^16.4.1",
+    "ethers": "^6.10.0",
+    "hardhat": "^2.19.4"
+  },
+  "dependencies": {
+    "jsbi": "^4.3.0"
+  }
+}
