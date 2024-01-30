@@ -1,15 +1,10 @@
 const { ethers } = require("hardhat");
 const {
-  Pool,
-  Route,
-} = require("@uniswap/v3-sdk");
-const {
   CurrencyAmount,
   Percent,
   Token,
   TradeType,
 } = require("@uniswap/sdk-core");
-const PoolABI = require("../ABI/poolABI.json");
 const ERC20_ABI = require("../ABI/ERC20ABI.json");
 const IUniswapV3RouterABI = require("../ABI/RouterABI.json");
 require("dotenv").config();
@@ -56,19 +51,19 @@ async function getTokenTransferApproval(token) {
   const transactionResponse = await wallet.sendTransaction({
     to: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     data: transaction.data,
-    // Add any other transaction parameters you need
   });
 
   const receipt = await transactionResponse.wait();
   console.log("Transaction receipt:", receipt);
 
-  console.log("getTokenTransferApproval function works succeddfully");
+  console.log("getTokenTransferApproval function works successfully");
 
 }
 
 async function main() {
   // Connect to the network
   const [deployer] = await ethers.getSigners(); 
+  const recipient = deployer.address;
 
   // Addresses for MATIC and USDT on Polygon
   const MATIC = new Token(
@@ -107,30 +102,8 @@ async function main() {
 
   // Create instances of the tokens
   const matic = MATIC;
-  const usdt = USDT;
 
-  const poolContract = new ethers.Contract(poolAddress, PoolABI, provider);
-
-  // Get pool information
-  const slot0 = await poolContract.slot0();
-  // const sqrtPriceX96 = JSBI.BigInt(slot0.sqrtPriceX96.toString());
-  const sqrtPriceX96 = slot0.sqrtPriceX96;
-  const tick = slot0.tick;
-  const fee = await poolContract.fee();
-  const liquidity = await poolContract.liquidity();
-
-  // Define the trade parameters
-  const amountToBeSwapped = CurrencyAmount.fromRawAmount(
-    matic,
-    ethers.parseUnits("100", 6).toString() // Convert 100 MATIC to the smallest unit with 18 decimal places
-  );
-  const slippageTolerance = new Percent("50", "10000"); // 0.50%
-  const recipient = deployer.address;
-  const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-
-  // Determine the trade route
-  const swapRoute = new Route([pool], matic, usdt);
-
+  
   // Executing the Trade
   await getTokenTransferApproval(matic);
 
@@ -140,7 +113,7 @@ async function main() {
     wallet
   );
 
-  console.log("AMOINT IN: ", amountIn);
+  const deadline = Math.floor(Date.now() / 1000) + 60 * 20; 
 
   const swapParams = {
     tokenIn: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -152,8 +125,6 @@ async function main() {
     amountOutMinimum: 0,
     sqrtPriceLimitX96: 0,
   };
-
-  // const connectWithSigner = swapRouterContract.connect(wallet);
 
   const tx = await swapRouterContract.connect(deployer).exactInputSingle(swapParams, {
     gasPrice: ethers.parseUnits("60", "gwei"),
