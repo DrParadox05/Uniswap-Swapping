@@ -57,12 +57,11 @@ async function getTokenTransferApproval(token) {
   console.log("Transaction receipt:", receipt);
 
   console.log("getTokenTransferApproval function works successfully");
-
 }
 
 async function main() {
   // Connect to the network
-  const [deployer] = await ethers.getSigners(); 
+  const [deployer] = await ethers.getSigners();
   const recipient = deployer.address;
 
   // Addresses for MATIC and USDT on Polygon
@@ -89,7 +88,7 @@ async function main() {
   );
 
   // Deposit MATIC and get WMATIC
-  const maticAmountToWrap = ethers.parseEther("100")// 100 MATIC
+  const maticAmountToWrap = ethers.parseEther("100"); // 100 MATIC
   await wmaticContract.deposit({ value: maticAmountToWrap });
   console.log(`Wrapped ${maticAmountToWrap.toString()} MATIC to WMATIC`);
 
@@ -103,7 +102,6 @@ async function main() {
   // Create instances of the tokens
   const matic = MATIC;
 
-  
   // Executing the Trade
   await getTokenTransferApproval(matic);
 
@@ -113,7 +111,7 @@ async function main() {
     wallet
   );
 
-  const deadline = Math.floor(Date.now() / 1000) + 60 * 20; 
+  const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
   const swapParams = {
     tokenIn: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -126,9 +124,11 @@ async function main() {
     sqrtPriceLimitX96: 0,
   };
 
-  const tx = await swapRouterContract.connect(deployer).exactInputSingle(swapParams, {
-    gasPrice: ethers.parseUnits("60", "gwei"),
-  });
+  const tx = await swapRouterContract
+    .connect(deployer)
+    .exactInputSingle(swapParams, {
+      gasPrice: ethers.parseUnits("60", "gwei"),
+    });
 
   console.log("Transaction submitted:", tx.hash);
 
